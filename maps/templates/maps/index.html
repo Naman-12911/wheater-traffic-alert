@@ -1,0 +1,93 @@
+{% extends 'users/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block styleblock %}
+    <style>
+        .map {
+            height: 80vh;
+            width: 100%;
+        }
+
+        .dropdown-item {
+            word-wrap: break-word;
+            white-space: normal;
+            --bs-dropdown-link-active-color: #000;
+            --bs-dropdown-link-active-bg: #fff;
+        }
+    </style>
+    <!-- OpenLayers CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.1.0/ol.css">
+{% endblock styleblock %}
+
+{% block content %}
+{% endblock content %}
+
+{% block map_content %}
+    <div class="row">
+    <h1 class="text-uppercase">Weather and Traffic Map</h1>
+        <div class="col-md-3 bg-white rounded">
+            <div class="dropdown mt-2">
+                <button class="btn btn-white btn-block text-start p-3 mb-5 rounded border" type="button"
+                        id="dropdownMenu2"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 100%">
+                    Start location
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenu2" style="width: 100%">
+                    <div class="dropdown-item normal-item">
+                        <div class="input-group">
+                            <input type="text" class="form-control">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" id="my-button">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="source-location-list">
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item" type="button">Another action</button>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item" type="button">Something else here</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div id="map" class="map"></div>
+        </div>
+        <div class="col-12 bg-white rounded mt-4 p-4">
+            <h4>Directions</h4>
+            <p>Maps provides directions for walking, biking, driving, or taking public transportation.</p>
+            <h4>Traffic Updates</h4>
+            <p>Maps includes live traffic updates, so you can avoid traffic jams and get to your destination faster. See real-time traffic conditions for your route on the map.</p>
+
+            <h4>Weather Updates</h4>
+            <p>This map displays the latest and most realistic view of Earth from space, as taken from weather satellites. It provides a detailed view of clouds, weather</p>
+
+            <h4>How to use?</h4>
+            <p>The app will have a Map. Your current location will be point A and you will select Destination as point B.
+                <br>
+
+The map will create a route from A to B. The user will get notified when there is traffic in route or weather conditions change at any part of the route.
+                <br>
+
+Please let me know if you want to change the implementation or add something to this.</p>
+            </div>
+        </div>
+    </div>
+{% endblock map_content %}
+
+{% block jsblock %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- OpenLayers JS-->
+    <script src="https://cdn.jsdelivr.net/npm/ol@v7.1.0/dist/ol.js"></script>
+
+    <script type="text/javascript">
+        if (window.location.hash && window.location.hash === '#_=_') {
+            window.location.hash = '';
+        }
+        let icon_url = "{% static 'marker.png' %}";
+        let current_location_icon = "{% static 'current_location.png' %}";
+    </script>
+
+    <script src="{% static 'js/map.js' %}"></script>
+{% endblock jsblock %}
