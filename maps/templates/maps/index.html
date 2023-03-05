@@ -15,6 +15,49 @@
             --bs-dropdown-link-active-color: #000;
             --bs-dropdown-link-active-bg: #fff;
         }
+
+        .text-gray {
+            color: #a3a4a6;
+        }
+
+        .text-gray:hover {
+            cursor: text;
+            color: #a3a4a6;
+        }
+
+        #source-location-list {
+            max-height: 40vh;
+            overflow-y: scroll;
+        }
+
+        #destination-location-list {
+            max-height: 40vh;
+            overflow-y: scroll;
+        }
+
+        .alert-info-bg {
+            border-radius: 2px;
+            background: #F0F7FF;
+            border: 2px solid #D7E7FF;
+            cursor: pointer;
+        }
+
+        .style-1::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0);
+            border-radius: 10px;
+            background-color: #F5F5F5;
+        }
+
+        .style-1::-webkit-scrollbar {
+            width: 12px;
+            background-color: #F5F5F5;
+        }
+
+        .style-1::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            -webkit-box-shadow: inset 0 0 6px rgba(218, 218, 218, 0.3);
+            background-color: rgba(85, 85, 85, 0.1);
+        }
     </style>
     <!-- OpenLayers CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.1.0/ol.css">
@@ -25,53 +68,55 @@
 
 {% block map_content %}
     <div class="row">
-    <h1 class="text-uppercase">Weather and Traffic Map</h1>
+        <h1 class="text-uppercase">Weather and Traffic Map</h1>
         <div class="col-md-3 bg-white rounded">
             <div class="dropdown mt-2">
-                <button class="btn btn-white btn-block text-start p-3 mb-5 rounded border" type="button"
-                        id="dropdownMenu2"
+                <button class="btn btn-white btn-block text-start p-3 mb-4 rounded border text-gray" type="button"
+                        id="source-dropdownMenu"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 100%">
-                    Start location
+                    start
                 </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenu2" style="width: 100%">
+                <div class="dropdown-menu" aria-labelledby="source-dropdownMenu" style="width: 100%">
                     <div class="dropdown-item normal-item">
                         <div class="input-group">
-                            <input type="text" class="form-control">
+                            <input type="text" class="form-control" id="source-search">
                             <div class="input-group-append">
-                                <button class="btn btn-outline-secondary" type="button" id="my-button">Search</button>
+                                <button class="btn btn-success" type="button" id="source-search-button">
+                                    Search
+                                </button>
                             </div>
                         </div>
                     </div>
-                    <div id="source-location-list">
-                        <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" type="button">Another action</button>
-                        <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" type="button">Something else here</button>
-                    </div>
+                    <div id="source-location-list" class="style-1"></div>
                 </div>
             </div>
+            <div class="dropdown">
+                <button class="btn btn-white btn-block text-start p-3 mb-4 rounded border text-gray" type="button"
+                        id="destination-dropdownMenu"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 100%">
+                    destination
+                </button>
+                <div class="dropdown-menu" aria-labelledby="destination-dropdownMenu" style="width: 100%">
+                    <div class="dropdown-item normal-item">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="destination-search">
+                            <div class="input-group-append">
+                                <button class="btn btn-success" type="button" id="destination-search-button">
+                                    Search
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="destination-location-list" class="style-1"></div>
+                </div>
+            </div>
+            <button class="btn btn-warning " id="start-animation">Check Conditions</button>
+            <h4 class="text-uppercase mt-2">Alerts</h4>
+            <div class="border rounded" id="alert_log" style="min-height: 40vh;overflow-y: scroll; max-height: 40vh;"></div>
         </div>
+
         <div class="col-md-9">
             <div id="map" class="map"></div>
-        </div>
-        <div class="col-12 bg-white rounded mt-4 p-4">
-            <h4>Directions</h4>
-            <p>Maps provides directions for walking, biking, driving, or taking public transportation.</p>
-            <h4>Traffic Updates</h4>
-            <p>Maps includes live traffic updates, so you can avoid traffic jams and get to your destination faster. See real-time traffic conditions for your route on the map.</p>
-
-            <h4>Weather Updates</h4>
-            <p>This map displays the latest and most realistic view of Earth from space, as taken from weather satellites. It provides a detailed view of clouds, weather</p>
-
-            <h4>How to use?</h4>
-            <p>The app will have a Map. Your current location will be point A and you will select Destination as point B.
-                <br>
-
-The map will create a route from A to B. The user will get notified when there is traffic in route or weather conditions change at any part of the route.
-                <br>
-
-Please let me know if you want to change the implementation or add something to this.</p>
-            </div>
         </div>
     </div>
 {% endblock map_content %}
@@ -80,14 +125,31 @@ Please let me know if you want to change the implementation or add something to 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <!-- OpenLayers JS-->
     <script src="https://cdn.jsdelivr.net/npm/ol@v7.1.0/dist/ol.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsts@2.3.0/dist/jsts.min.js"></script>
 
     <script type="text/javascript">
         if (window.location.hash && window.location.hash === '#_=_') {
             window.location.hash = '';
         }
         let icon_url = "{% static 'marker.png' %}";
+        let source_icon_url = "{% static 'source_marker.png' %}";
         let current_location_icon = "{% static 'current_location.png' %}";
+
+
+
+
+        let sun = "{% static 'weather/sun.png' %}"
+        let cloudy = "{% static 'weather/cloudy.png' %}"
+        let fog = "{% static 'weather/fog.png' %}"
+        let wind = "{% static 'weather/wind.png' %}"
+        let rain = "{% static 'weather/rain.png' %}"
+        let snow = "{% static 'weather/snow.png' %}"
+        let storm = "{% static 'weather/storm.png' %}"
     </script>
 
+    <script src="{% static 'js/speed_variable.js' %}"></script>
     <script src="{% static 'js/map.js' %}"></script>
+    <script src="{% static 'js/photon_search.js' %}"></script>
+    <script src="{% static 'js/fetch_api.js' %}"></script>
+    <script src="{% static 'js/traverse_route.js' %}"></script>
 {% endblock jsblock %}

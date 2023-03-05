@@ -1,0 +1,24 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+    {% if form %}
+        <div class="px-4 py-3">
+            <form method="post" class="card border-0 mx-lg-5">
+                {% csrf_token %}
+                <fieldset class="form-group  text-center">
+                    <legend class="border-bottom mb-3">
+                        <h3>Sign In</h3>
+                    </legend>
+                </fieldset>
+                {{ form|crispy }}
+                <br>
+                <button type="submit" class="btn btn-primary btn-block mt-3 border-0" style="background: #bca3fb">
+                    Login
+                </button>
+                <p class="small fw-bold mt-2 pt-1 mb-0">Don't have an account? <a href="{% url 'register' %}"
+                                                                                  class="link-primary text-decoration-none">Register</a>
+                </p>
+            </form>
+        </div>
+    {% endif %}
+{% endblock content %}

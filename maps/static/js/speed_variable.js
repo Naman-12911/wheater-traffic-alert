@@ -1,0 +1,1 @@
+let flow_speed_boundary = 40

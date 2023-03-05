@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Take environment variables from .env.
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +29,7 @@ SECRET_KEY = 'django-insecure-0=30+$!^r#x&c6c9tra_0&&#)#u1&*!+nrfdavfe659qg58kba
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -44,7 +48,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # file for the serve static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -126,19 +129,6 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATIC_URL = '/static/'
-#STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
-# add manual
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static')
-]
-MEDIA_ROOT = os.path.join(BASE_DIR,'static/images/')
-
-MEDIA_URL  = "/images/"
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
@@ -148,3 +138,5 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGIN_REDIRECT_URL = 'users-home'
 LOGIN_URL = 'login'
+
+TOMTOM_MAP_APIKEY = os.environ.get('TOMTOM_MAP_APIKEY')

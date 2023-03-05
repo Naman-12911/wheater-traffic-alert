@@ -1,0 +1,116 @@
+{% extends 'users/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block styleblock %}
+    <style>
+        .map {
+            height: 80vh;
+            width: 100%;
+        }
+
+        .dropdown-item {
+            word-wrap: break-word;
+            white-space: normal;
+            --bs-dropdown-link-active-color: #000;
+            --bs-dropdown-link-active-bg: #fff;
+        }
+
+        .text-gray {
+            color: #a3a4a6;
+        }
+
+        .text-gray:hover {
+            cursor: text;
+            color: #a3a4a6;
+        }
+
+        #source-location-list {
+            max-height: 40vh;
+            overflow-y: scroll;
+        }
+
+        #destination-location-list {
+            max-height: 40vh;
+            overflow-y: scroll;
+        }
+
+        .alert-info-bg {
+            border-radius: 2px;
+            background: #F0F7FF;
+            border: 2px solid #D7E7FF;
+            cursor: pointer;
+        }
+
+        .style-1::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0);
+            border-radius: 10px;
+            background-color: #F5F5F5;
+        }
+
+        .style-1::-webkit-scrollbar {
+            width: 12px;
+            background-color: #F5F5F5;
+        }
+
+        .style-1::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            -webkit-box-shadow: inset 0 0 6px rgba(218, 218, 218, 0.3);
+            background-color: rgba(85, 85, 85, 0.1);
+        }
+    </style>
+    <!-- OpenLayers CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.1.0/ol.css">
+{% endblock styleblock %}
+
+{% block content %}
+{% endblock content %}
+
+{% block map_content %}
+    <div class="row">
+        <h1 class="text-uppercase">Weather and Traffic Map</h1>
+        <div class="col-12 bg-white rounded mt-4 p-4">
+            <h4>Directions</h4>
+            <p>Maps provides directions for walking, biking, driving, or taking public transportation.</p>
+            <h4>Traffic Updates</h4>
+            <p>Maps includes live traffic updates, so you can avoid traffic jams and get to your destination faster. See
+                real-time traffic conditions for your route on the map.</p>
+
+            <h4>Weather Updates</h4>
+            <p>This map displays the latest and most realistic view of Earth from space, as taken from weather
+                satellites. It provides a detailed view of clouds, weather</p>
+
+            <h4>How to use?</h4>
+            <p>The app will have a Map. Your current location will be point A and you will select Destination as point
+                B.
+                <br>
+
+                The map will create a route from A to B. The user will get notified when there is traffic in route or
+                weather conditions change at any part of the route.
+                <br>
+
+                Please let me know if you want to change the implementation or add something to this.</p>
+        </div>
+        <div class="col-12 bg-white rounded mt-4 p-4">
+            <h2 class="text-upper text-warning">Technology</h2>
+            <h3 class="upper-case">Django</h3>
+            <p>Django is a free and open-source, Python-based web framework that follows the model–template–views architectural pattern.</p>
+
+            <h4>Map (OpenLayers)</h4>
+            <p>OpenLayer is completely free, Open Source JavaScript. OpenLayers makes it easy to put a dynamic map in any web page. It can display map tiles, vector data and markers loaded from any source. OpenLayers has been developed to further the use of geographic information of all kinds.</p>
+
+            <h4>Search Locations (Photon komoot)</h4>
+            <p>Photon is an open source geocoder built for OpenStreetMap data. It is based on elasticsearch - an efficient, powerful and highly scalable search platform. It provides search result with coordinates which can be used with most of the map and aswell we openlayers.</p>
+
+            <h4>TOM TOM (Traffic API)</h4>
+            <p>A highly detailed map that's trusted by the world's biggest companies to provide guidance and coverage to users in over 200 countries and territories.</p>
+            <h6 class="text-warning">Flow Segment Data</h6>
+            <p>This service provides information about the speeds and travel times of the road fragment closest to the given coordinates. It is designed to work alongside the Flow Tiles to support clickable flow data visualizations. With this API, the client side can connect any place in the map with flow data on the closest road and present it to the user.
+            <br>Read more <a href="https://developer.tomtom.com/traffic-api/documentation/traffic-flow/flow-segment-data">here</a></p>
+
+            <h4>Open-Meteo (Weather API)</h4>
+            <p>Open-Meteo is an open-source weather API with free access for non-commercial use. No API key is required. You can use it immediately!
+            <br>Read More <a href="https://open-meteo.com/en/docs">here</a></p>
+        </div>
+    </div>
+{% endblock map_content %}
