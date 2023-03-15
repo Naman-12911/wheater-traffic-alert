@@ -3,9 +3,11 @@
 {% load crispy_forms_tags %}
 
 {% block styleblock %}
+    <link href="{% static 'css/card.css' %}" rel="stylesheet">
     <style>
         .map {
-            height: 80vh;
+            min-height: 80vh;
+            height: 100%;
             width: 100%;
         }
 
@@ -58,6 +60,12 @@
             -webkit-box-shadow: inset 0 0 6px rgba(218, 218, 218, 0.3);
             background-color: rgba(85, 85, 85, 0.1);
         }
+        .p-r-0{
+            padding-right: 0;
+        }
+        .p-l-0{
+            padding-left: 0;
+        }
     </style>
     <!-- OpenLayers CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.1.0/ol.css">
@@ -67,9 +75,9 @@
 {% endblock content %}
 
 {% block map_content %}
-    <div class="row">
-        <h1 class="text-uppercase">Weather and Traffic Map</h1>
-        <div class="col-md-3 bg-white rounded">
+    <h1 class="text-uppercase">Weather and Traffic Map</h1>
+    <div class="row bg-white rounded">
+        <div class="col-md-4 bg-white rounded pt-4">
             <div class="dropdown mt-2">
                 <button class="btn btn-white btn-block text-start p-3 mb-4 rounded border text-gray" type="button"
                         id="source-dropdownMenu"
@@ -110,13 +118,12 @@
                     <div id="destination-location-list" class="style-1"></div>
                 </div>
             </div>
-            <button class="btn btn-warning " id="start-animation">Check Conditions</button>
             <h4 class="text-uppercase mt-2">Alerts</h4>
-            <div class="border rounded" id="alert_log" style="min-height: 40vh;overflow-y: scroll; max-height: 40vh;"></div>
+            <div class="border rounded style-1 bg-light mb-4" id="alert_log" style="min-height: 60vh; overflow-y: scroll; max-height: 60vh;"></div>
         </div>
 
-        <div class="col-md-9">
-            <div id="map" class="map"></div>
+        <div class="col-md-8 rounded">
+            <div id="map" class="map rounded"></div>
         </div>
     </div>
 {% endblock map_content %}
@@ -134,8 +141,7 @@
         let icon_url = "{% static 'marker.png' %}";
         let source_icon_url = "{% static 'source_marker.png' %}";
         let current_location_icon = "{% static 'current_location.png' %}";
-
-
+        let checkpoint_url = "{% static 'checkpoint.png' %}";
 
 
         let sun = "{% static 'weather/sun.png' %}"
@@ -147,9 +153,10 @@
         let storm = "{% static 'weather/storm.png' %}"
     </script>
 
-    <script src="{% static 'js/speed_variable.js' %}"></script>
+    <script src="{% static 'js/weather_code_mapping.js' %}"></script>
     <script src="{% static 'js/map.js' %}"></script>
-    <script src="{% static 'js/photon_search.js' %}"></script>
+    <script src="{% static 'js/create_checkpoint_card.js' %}"></script>
     <script src="{% static 'js/fetch_api.js' %}"></script>
-    <script src="{% static 'js/traverse_route.js' %}"></script>
+    <script src="{% static 'js/create_route.js' %}"></script>
+    <script src="{% static 'js/photon_search.js' %}"></script>
 {% endblock jsblock %}

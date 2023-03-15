@@ -150,4 +150,4 @@ LOGIN_URL = 'login'
 
 TOMTOM_MAP_APIKEY = os.environ.get('TOMTOM_MAP_APIKEY')
 
-CSRF_TRUSTED_ORIGINS = ["maristnavigation.herokuapp.com","https://maristnavigation.herokuapp.com"]
+CSRF_TRUSTED_ORIGINS = ["https://maristnavigation.herokuapp.com"]

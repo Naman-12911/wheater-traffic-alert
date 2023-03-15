@@ -1,14 +1,10 @@
 let current_location_coordinates;
 let map;
-let url_osrm_route = 'https://router.project-osrm.org/route/v1/driving/';
-// let url_osrm_route = 'https://routing.openstreetmap.de/routed-bike/route/v1/driving/';  // Routing option 2
-let url_osrm_map_route = '//router.project-osrm.org/route/v1/driving/';
 let olview;
 let source_location;
 let destination_location;
 let source_location_marker;
 let destination_location_marker;
-let map_route;
 let msg_el = $("#error_message");
 
 
@@ -37,7 +33,7 @@ function showError(error) {
         case error.UNKNOWN_ERROR:
             break;
     }
-    create_map([8078795.833261827, 2632691.5825704993]);
+    create_map(-100.00641136532026, 36.795101535982695);
 }
 
 let vectorSource = new ol.source.Vector(),
@@ -59,6 +55,12 @@ let vectorSource = new ol.source.Vector(),
             image: new ol.style.Icon({
                 anchor: [0.5, 1],
                 src: icon_url
+            })
+        }),
+        checkpoint_icon: new ol.style.Style({
+            image: new ol.style.Icon({
+                anchor: [0.5, 1],
+                src: checkpoint_url
             })
         }),
         source_icon: new ol.style.Style({
@@ -124,10 +126,38 @@ let vectorSource = new ol.source.Vector(),
         }),
     };
 
+function createWeatherMarker(src) {
+    return new ol.style.Style({
+        image: new ol.style.Icon({
+            anchor: [0.5, 1],
+            src: src
+        })
+    });
+}
+
+function createStyle({textAlign, justify, route_length, route_time}) {
+    return new ol.style.Style({
+        text: new ol.style.Text({
+            font: '16px sans-serif',
+            textAlign,
+            justify,
+            text:
+                `Distance: ${route_length}\nTime: ${route_time}`,
+            fill: new ol.style.Fill({
+                color: [255, 255, 255, 1],
+            }),
+            backgroundFill: new ol.style.Fill({
+                color: [168, 50, 153, 0.6],
+            }),
+            padding: [2, 2, 2, 2],
+        }),
+    });
+}
+
 function create_map(map_center) {
     olview = new ol.View({
         center: map_center,
-        zoom: 15
+        zoom: 6
     });
 
     map = new ol.Map({
@@ -157,58 +187,18 @@ let utils = {
         feature.setStyle(styles.icon);
         vectorSource.clear();
         vectorSource.addFeature(feature);
-        utils.create_current_location_marker(current_location_coordinates);
+        // utils.create_current_location_marker(current_location_coordinates);
     },
     createRoute: function () {
         //get the route
-        var source = source_location.join();
-        var destination = destination_location.join();
-        set_map_route()
+        var source = `${source_location[1]},${source_location[0]}`;
+        var destination = `${destination_location[1]},${destination_location[0]}`;
         features = []
-
-        fetch(url_osrm_route + source + ';' + destination + '?overview=false&alternatives=true&steps=true').then(function (r) {
+        const api_url = "/map/" + source + "/" + destination + "/"
+        fetch(api_url).then(function (r) {
             return r.json();
         }).then(function (json) {
-            if (json.code !== 'Ok') {
-                msg_el.innerHTML = 'No route found.';
-                return;
-            }
-            msg_el.innerHTML = 'Route added';
-
-            json.routes[0].legs[0].steps.map(function (t) {
-                let polyline = t.geometry;
-                // route is ol.geom.LineString
-                var route = new ol.format.Polyline({
-                    factor: 1e5
-                }).readGeometry(polyline, {
-                    dataProjection: 'EPSG:4326',
-                    featureProjection: 'EPSG:3857'
-                });
-                var feature = new ol.Feature({
-                    type: 'route',
-                    geometry: route
-                });
-                feature.setStyle(styles.route);
-                features.push(feature);
-            });
-        }).then(function () {
-            let parser = new jsts.io.OL3Parser();
-            let union_result = parser.read(features[0].getGeometry());
-            features.slice(1, features.length - 1).map(function (feat) {
-                let current_feat = parser.read(feat.getGeometry());
-                union_result = union_result.union(current_feat);
-                let f = new ol.Feature({
-                    type: 'route',
-                    geometry: parser.write(union_result)
-                });
-                union_result = parser.read(f.getGeometry());
-            });
-            let feature = new ol.Feature({
-                type: 'route',
-                geometry: parser.write(union_result)
-            });
-            feature.setStyle(styles.route);
-            vectorSource.addFeature(feature);
+            create_route(json.points, json.sections, json['details'])
         })
     },
     create_current_location_marker: function (coord) {
@@ -225,14 +215,12 @@ let utils = {
         return ol.proj.transform([
             parseFloat(coord[0]), parseFloat(coord[1])
         ], 'EPSG:3857', 'EPSG:4326');
-    }
-    ,
+    },
     to3857: function (coord) {
         return ol.proj.transform([
             parseFloat(coord[0]), parseFloat(coord[1])
         ], 'EPSG:4326', 'EPSG:3857');
-    }
-    ,
+    },
 
     createSourceFeature: function (coord) {
         let feature = new ol.Feature({
@@ -253,9 +241,8 @@ let utils = {
             padding: [60, 60, 60, 60],
             constrainResolution: false
         });
-        utils.create_current_location_marker(current_location_coordinates);
-    }
-    ,
+        // utils.create_current_location_marker(current_location_coordinates);
+    },
     createDestinationFeature: function (coord) {
         let feature = new ol.Feature({
             type: 'place',
@@ -275,9 +262,8 @@ let utils = {
             padding: [60, 60, 60, 60],
             constrainResolution: false
         });
-        utils.create_current_location_marker(current_location_coordinates);
-    }
-    ,
+        // utils.create_current_location_marker(current_location_coordinates);
+    },
     createOnlySourceFeature: function (coord) {
         let feature = new ol.Feature({
             type: 'place',
@@ -286,8 +272,7 @@ let utils = {
         feature.setStyle(styles.source_icon);
         source_location_marker = feature;
         vectorSource.addFeature(feature);
-    }
-    ,
+    },
     createOnlyDestinationFeature: function (coord) {
         let feature = new ol.Feature({
             type: 'place',
@@ -296,35 +281,16 @@ let utils = {
         feature.setStyle(styles.icon);
         destination_location_marker = feature;
         vectorSource.addFeature(feature);
-    }
-    ,
+    },
 };
 
-getLocation()
+// geolLocation function requires location permission
+// getLocation()
+
+create_map(utils.to3857([-100.00641136532026, 36.795101535982695]));
 
 
-function set_map_route() {
-    //get the route
-    var source = source_location.join();
-    var destination = destination_location.join();
-
-    fetch(url_osrm_map_route + source + ';' + destination).then(function (r) {
-        return r.json();
-    }).then(function (json) {
-        if (json.code !== 'Ok') {
-            msg_el.innerHTML = 'No route found.';
-            return;
-        }
-        msg_el.innerHTML = 'Route added';
-        //points.length = 0;
-
-        let polyline = json.routes[0].geometry;
-        // route is ol.geom.LineString
-        map_route = new ol.format.Polyline({
-            factor: 1e5
-        }).readGeometry(polyline, {
-            dataProjection: 'EPSG:4326',
-            featureProjection: 'EPSG:3857'
-        });
-    });
-}
+var intervalId = window.setInterval(function(){
+    if (destination_location !== undefined && source_location !== undefined)
+        utils.createRoute()
+}, 50000);

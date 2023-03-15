@@ -1,30 +1,34 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
+from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, ProfilePhoneNumberForm
 from django.contrib import messages
+
+from .models import Profile
 
 
 @login_required
 def home(request):
-    return render(request, "users/home.html")
+    return redirect('map')
 
 
 def register(request):
-    print(request.user.is_authenticated)
     if request.user.is_authenticated:
-        print("Hello")
         return redirect('users-home')
     context = {}
     if request.method == "POST":
         form = UserRegisterForm(request.POST)
-        if form.is_valid():
-            form.save()
+        phone_number_form = ProfilePhoneNumberForm(request.POST)
+        if form.is_valid() and phone_number_form.is_valid():
+            instance = form.save()
+            Profile.objects.create(user=instance, phone=request.POST.get('phone'), country_code=request.POST.get('country_code'))
             username = form.cleaned_data.get('username')
             messages.success(request, f'Account Created for {username}')
             return redirect('login')
     else:
         form = UserRegisterForm()
+        phone_number_form = ProfilePhoneNumberForm()
     context['form'] = form
+    context['phone_number_form'] = phone_number_form
     context['title'] = 'Register'
     return render(request, 'users/register.html', context)
 
