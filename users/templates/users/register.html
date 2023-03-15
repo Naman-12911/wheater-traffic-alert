@@ -60,7 +60,8 @@
                 $.get("http://ipinfo.io", function () {
                 }, "jsonp").always(function (resp) {
                     var countryCode = (resp && resp.country) ? resp.country : "";
-                    callback(countryCode);
+                    {#callback(countryCode);#}
+                    callback('US');
                 });
             },
             utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/11.0.9/js/utils.js"
