@@ -1,7 +1,7 @@
 function create_alert_card(city, place_name, temp, description, traffic, weather_mark, weather_info) {
     const current_date = new Date();
-    const date_time = current_date.getDate() + "/"
-        + (current_date.getMonth() + 1) + "/"
+    const date_time = (current_date.getMonth() + 1) + "/"
+        + current_date.getDate() + "/"
         + current_date.getFullYear() + " @ "
         + current_date.getHours() + ":"
         + current_date.getMinutes() + ":"

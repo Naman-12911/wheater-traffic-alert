@@ -9,11 +9,27 @@ function divideRange(n) {
     return result;
 }
 
+function formatTime(seconds) {
+    let hours = Math.floor(seconds / 3600);
+    let minutes = Math.floor((seconds - (hours * 3600)) / 60);
+    let remainingSeconds = seconds - (hours * 3600) - (minutes * 60);
+    if (hours < 10) {
+        hours = "0" + hours;
+    }
+    if (minutes < 10) {
+        minutes = "0" + minutes;
+    }
+    if (remainingSeconds < 10) {
+        remainingSeconds = "0" + remainingSeconds;
+    }
+    return hours + ":" + minutes + ":" + remainingSeconds;
+}
+
 function makeCheckpoints(checkpoints_distance, lineString) {
     for (let i = 0; i < checkpoints_distance.length; i++) {
         const Coordinate = lineString.getCoordinateAt(checkpoints_distance[i]);
         const coordinate_to4326 = utils.to4326(Coordinate);
-        start_end_flag = i === 0 || i === checkpoints_distance.length-1;
+        start_end_flag = i === 0 || i === checkpoints_distance.length - 1;
         fetch_weather(coordinate_to4326[1], coordinate_to4326[0], start_end_flag);
     }
 }
@@ -62,7 +78,6 @@ function create_route(data, sections, details) {
     makeCheckpoints(checkpoints_distance, lineString);
 
     const center_coordinates = lineString.getCoordinateAt(0.5);
-    const center_coordinate_to4326 = utils.to4326(center_coordinates);
     const route_time_and_distance_feature = new ol.Feature({
         geometry: new ol.geom.Point(center_coordinates),
     });
@@ -70,8 +85,8 @@ function create_route(data, sections, details) {
     let route_time_and_distance_style = createStyle({
         textAlign: 'left',
         justify: 'center',
-        route_length: (details.lengthInMeters / 1000) + 'KM',
-        route_time: (details.travelTimeInSeconds / 3600).toFixed(2) + 'Hours'
+        route_length: (details.lengthInMeters / 1609.344).toFixed(2) + ' MILES',
+        route_time: formatTime(details.travelTimeInSeconds)
     });
     route_time_and_distance_feature.setStyle(route_time_and_distance_style);
     vectorSource.addFeature(route_time_and_distance_feature);
