@@ -2,9 +2,6 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, ProfilePhoneNumberForm
 from django.contrib import messages
-
-
-
 from django.shortcuts import render
 from rest_framework import status
 from rest_framework.decorators import api_view
