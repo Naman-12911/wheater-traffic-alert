@@ -72,7 +72,7 @@ function create_route(data, sections, details) {
 
     // Adding checkpoints
     let lengthInMiles = Math.floor(details.lengthInMeters / 1609.344);
-    let checkpoint_count = 4
+    let checkpoint_count = 4 // change the code for the points
     if (lengthInMiles > 5)
         checkpoint_count = 7
     let checkpoints_distance = divideRange(checkpoint_count);

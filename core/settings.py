@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'users.apps.UsersConfig',
     'maps.apps.MapsConfig',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -150,4 +151,4 @@ LOGIN_URL = 'login'
 
 TOMTOM_MAP_APIKEY = os.environ.get('TOMTOM_MAP_APIKEY')
 
-CSRF_TRUSTED_ORIGINS = ["https://maristnavigation.herokuapp.com"]
+CSRF_TRUSTED_ORIGINS = ["https://maristnavigation.herokuapp.com", "http://localhost:8000"]

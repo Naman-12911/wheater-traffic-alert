@@ -3,6 +3,15 @@ from django.contrib.auth.decorators import login_required
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, ProfilePhoneNumberForm
 from django.contrib import messages
 
+
+
+from django.shortcuts import render
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+
 from .models import Profile
 
 
@@ -52,3 +61,46 @@ def profile(request):
         'p_form': p_form
     }
     return render(request, 'users/profile.html', context)
+
+
+# ------------------------------------------ 
+# apis 
+from .serializer import MyTokenObtainPairSerializer,RegisterSerializer,ProfileSerializer
+from rest_framework.permissions import AllowAny
+from rest_framework_simplejwt.views import TokenObtainPairView
+from django.contrib.auth.models import User
+from rest_framework import generics
+
+
+class MyObtainTokenPairView(TokenObtainPairView):
+    permission_classes = (AllowAny,)
+    serializer_class = MyTokenObtainPairSerializer
+
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = RegisterSerializer
+
+from rest_framework import authentication, permissions
+
+class ProfileDetailAPIView(APIView):
+    #permission_classes = [permissions.IsAuthenticated]
+    def get(self, request, pk):
+        article = Profile.objects.get(id=pk)
+        serializer = Profile(article)
+        return Response(serializer.data)
+    
+    def put(self, request, pk):
+        article = Profile.objects.get(id=pk)
+        serializer = ProfileSerializer(article, 
+                                                  request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, 
+                       status=status.HTTP_400_BAD_REQUEST)
+    
+    # def delete(self, request, pk):
+    #     article = models.Article.objects.get(id=pk)
+    #     article.delete()
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
