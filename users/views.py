@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.http import HttpResponse, HttpResponseNotFound, JsonResponse
 
 
 from .models import Profile
@@ -79,25 +80,21 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
 
 from rest_framework import authentication, permissions
+from rest_framework.mixins import ListModelMixin, CreateModelMixin, UpdateModelMixin, DestroyModelMixin, RetrieveModelMixin
+from rest_framework.generics import GenericAPIView
 
-class ProfileDetailAPIView(APIView):
+
+
+class ProfileDetailAPIView(GenericAPIView, RetrieveModelMixin , UpdateModelMixin, DestroyModelMixin):
     #permission_classes = [permissions.IsAuthenticated]
-    def get(self, request, pk):
-        article = Profile.objects.get(id=pk)
-        serializer = Profile(article)
-        return Response(serializer.data)
-    
-    def put(self, request, pk):
-        article = Profile.objects.get(id=pk)
-        serializer = ProfileSerializer(article, 
-                                                  request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, 
-                       status=status.HTTP_400_BAD_REQUEST)
-    
-    # def delete(self, request, pk):
-    #     article = models.Article.objects.get(id=pk)
-    #     article.delete()
-    #     return Response(status=status.HTTP_204_NO_CONTENT)
+    queryset=Profile.objects.all()
+    serializer_class=ProfileSerializer
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        self.partial_update(request, *args, **kwargs)
+        return JsonResponse("success", safe=False)
+
+
+      

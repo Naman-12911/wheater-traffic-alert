@@ -6,7 +6,7 @@ from PIL import Image
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField(default='default.jpg', upload_to='profile_pics')
-    phone = models.CharField(max_length=14, blank=False, null=False, unique=True, db_index=False)
+    phone = models.CharField(max_length=14, blank=False, null=False, unique=False, db_index=False)
     country_code = models.CharField(max_length=5, blank=False, null=False, db_index=False, default="IN")
 
     def __str__(self):

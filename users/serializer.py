@@ -4,35 +4,27 @@ from django.contrib.auth.models import User
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 from .models import Profile
+from django.db import models
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-
     @classmethod
     def get_token(cls, user):
         token = super(MyTokenObtainPairSerializer, cls).get_token(user)
-
         # Add custom claims
         token['username'] = user.username
         token['id'] = user.id
         return token
     
-
-
-
-
-
 class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
             required=True,
             validators=[UniqueValidator(queryset=User.objects.all())]
             )
-
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     password2 = serializers.CharField(write_only=True, required=True)
-
     class Meta:
         model = User
-        fields = ('username', 'password', 'password2', 'email', 'first_name', 'last_name')
+        fields = ('username', 'password', 'password2' , 'email', 'first_name', 'last_name')
         extra_kwargs = {
             'first_name': {'required': True},
             'last_name': {'required': True}
@@ -58,9 +50,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         # )
         user.set_password(validated_data['password'])
         user.save()
+        # my code
+        reg=Profile.objects.create(user=user, image="default.jpg", phone="0000000000", country_code="0")
+        reg.save()
         
-        #Profile.save()
-
         return user
     
 
@@ -69,7 +62,4 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = "__all__"
-    def to_representation(self, instance):
-        response = super().to_representation(instance)
-        response['user'] = RegisterSerializer(instance.user).data
-        return response
+    
