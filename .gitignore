@@ -1,3 +1,5 @@
-./Procfile
-./env
-./env2
+
+*.pyc
+Procfile
+.env
+env2
